@@ -216,3 +216,62 @@ body {
   color: #ffffff;
   margin-left: 4px;
 }
+
+.bubble-question {
+  position: absolute;
+  bottom: 200px;
+  right: 40px;
+  max-width: 320px;
+  background: rgba(32, 31, 31, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  padding: 1rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #e5e2e1;
+  z-index: 25;
+  animation: fadeInUp 0.3s ease;
+}
+
+.bubble-question::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: 24px;
+  width: 16px;
+  height: 16px;
+  background: rgba(32, 31, 31, 0.6);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.action-btn.recording {
+  box-shadow: 0 0 30px rgba(255, 75, 75, 0.4);
+}
+
+.action-btn.recording .icon-mic {
+  display: none;
+}
+
+.action-btn.recording .icon-stop {
+  display: block;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
