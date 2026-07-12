@@ -17,16 +17,18 @@
   </head>
   <body>
     <main class="main">
+      <button class="header-btn header-btn-left">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <button class="header-btn header-btn-right">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
       <div class="ambient-glow">
         <div class="glow-circle"></div>
       </div>
 
       <div class="orb-container">
         <div class="ai-orb"></div>
-      </div>
-
-      <div id="question-bubble" class="bubble-question hidden">
-        <span id="question-text"></span>
       </div>
 
       <div class="bottom-area">
@@ -47,6 +49,21 @@
         <p class="hint-text">Tap to start speaking</p>
       </div>
     </main>
+    <div id="chat-popover" class="chat-popover glass-panel hidden">
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <div class="chat-status-dot"></div>
+          <span class="chat-title">Aura AI</span>
+        </div>
+        <button id="chat-close-btn" class="chat-close-btn">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+    </div>
+    <button id="chat-toggle-btn" class="chat-bubble-btn glass-panel">
+      <span class="material-symbols-outlined icon-chat">chat_bubble</span>
+    </button>
     <script src="/assets/app.js"></script>
   </body>
 </html>

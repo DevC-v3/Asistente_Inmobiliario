@@ -5,9 +5,21 @@ let audioStream = null;
 let currentAudio = null;
 
 const micBtn = document.getElementById('mic-btn');
-const questionBubble = document.getElementById('question-bubble');
-const questionText = document.getElementById('question-text');
 const hintText = document.querySelector('.hint-text');
+const chatToggle = document.getElementById('chat-toggle-btn');
+const chatPopover = document.getElementById('chat-popover');
+const chatMessages = document.getElementById('chat-messages');
+const chatClose = document.getElementById('chat-close-btn');
+
+chatToggle.addEventListener('click', () => {
+  chatPopover.classList.remove('hidden');
+  chatToggle.classList.add('hidden');
+});
+
+chatClose.addEventListener('click', () => {
+  chatPopover.classList.add('hidden');
+  chatToggle.classList.remove('hidden');
+});
 
 micBtn.addEventListener('click', () => {
   if (isRecording) {
@@ -43,7 +55,6 @@ async function startRecording() {
     micBtn.classList.add('recording');
     micBtn.disabled = false;
     hintText.textContent = 'Tap to stop speaking';
-    questionBubble.classList.add('hidden');
   } catch (err) {
     console.error('Error accessing microphone:', err);
     hintText.textContent = 'Microphone access denied';
@@ -79,8 +90,8 @@ async function sendAudio() {
       return;
     }
 
-    questionText.textContent = data.question;
-    questionBubble.classList.remove('hidden');
+    addChatMessage(data.question, 'user');
+    addChatMessage(data.answer, 'ai');
 
     playAudio(data.audio);
   } catch (err) {
@@ -116,4 +127,15 @@ function playAudio(base64Data) {
     URL.revokeObjectURL(url);
   };
   currentAudio.play();
+}
+
+function addChatMessage(text, sender) {
+  const div = document.createElement('div');
+  div.className = sender === 'user' ? 'message-user' : 'message-ai';
+  const bubble = document.createElement('div');
+  bubble.className = sender === 'user' ? 'message-user-text' : 'message-ai-text';
+  bubble.textContent = text;
+  div.appendChild(bubble);
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
