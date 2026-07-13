@@ -10,6 +10,7 @@ const chatToggle = document.getElementById('chat-toggle-btn');
 const chatPopover = document.getElementById('chat-popover');
 const chatMessages = document.getElementById('chat-messages');
 const chatClose = document.getElementById('chat-close-btn');
+const visualizer = document.querySelector('.visualizer');
 
 chatToggle.addEventListener('click', () => {
   chatPopover.classList.remove('hidden');
@@ -55,6 +56,7 @@ async function startRecording() {
     micBtn.classList.add('recording');
     micBtn.disabled = false;
     hintText.textContent = 'Tap to stop speaking';
+    visualizer.classList.add('hidden');
   } catch (err) {
     console.error('Error accessing microphone:', err);
     hintText.textContent = 'Microphone access denied';
@@ -93,6 +95,7 @@ async function sendAudio() {
     addChatMessage(data.question, 'user');
     addChatMessage(data.answer, 'ai');
 
+    visualizer.classList.remove('hidden');
     playAudio(data.audio);
   } catch (err) {
     console.error('Error sending audio:', err);
@@ -119,11 +122,13 @@ function playAudio(base64Data) {
   currentAudio.onended = () => {
     micBtn.disabled = false;
     hintText.textContent = 'Tap to start speaking';
+    visualizer.classList.add('hidden');
     URL.revokeObjectURL(url);
   };
   currentAudio.onerror = () => {
     micBtn.disabled = false;
     hintText.textContent = 'Tap to start speaking';
+    visualizer.classList.add('hidden');
     URL.revokeObjectURL(url);
   };
   currentAudio.play();
