@@ -72,6 +72,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/home')
+def home():
+    return render_template('landing_page.html')
+
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     if 'audio' not in request.files:
