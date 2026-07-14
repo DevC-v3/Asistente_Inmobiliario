@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEPA IA — Tu asistente de voz para encontrar departamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#111114;
+    --bg-soft:#18181c;
+    --panel:#1c1c21;
+    --panel-2:#212127;
+    --line:rgba(255,255,255,.08);
+    --text:#F2F2F5;
+    --text-muted:#95959e;
+    --text-dim:#65656d;
+    --accent-a:#6D6FF6;
+    --accent-b:#B7BBFF;
+    --accent-glow:rgba(109,111,246,.5);
+    --white-btn:#F5F5F7;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .serif{font-family:'Fraunces',serif;}
+  a{color:inherit; text-decoration:none;}
+  ::selection{background:var(--accent-a); color:#fff;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:8px;
+    color:var(--accent-b);
+  }
+  .eyebrow::before{content:""; width:16px; height:1px; background:currentColor; opacity:.6;}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    *{animation:none !important;}
+  }
+
+  /* ================= HERO ================= */
+  .hero{
+    position:relative;
+    background:
+      radial-gradient(900px 500px at 72% 20%, rgba(109,111,246,.10), transparent 65%),
+      var(--bg);
+    padding-bottom:20px;
+  }
+  nav{
+    position:relative; z-index:3;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:26px 0;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Fraunces',serif; font-weight:600; font-size:19px;
+  }
+  .logo .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--accent-b);
+    box-shadow:0 0 12px 2px var(--accent-glow);
+    animation:pulse-dot 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{0%,100%{opacity:1;} 50%{opacity:.5;}}
+  .nav-cta{
+    font-family:'IBM Plex Mono',monospace; font-size:13px;
+    border:1px solid var(--line);
+    padding:9px 18px; border-radius:999px;
+    transition:border-color .2s, background .2s;
+  }
+  .nav-cta:hover{border-color:rgba(183,187,255,.5); background:rgba(109,111,246,.08);}
+
+  .hero-grid{
+    position:relative; z-index:2;
+    display:grid; grid-template-columns:1fr .95fr;
+    gap:40px; align-items:center;
+    padding-top:36px;
+  }
+  .hero-copy h1{
+    font-family:'Fraunces',serif; font-weight:500;
+    font-size:clamp(38px,5vw,62px);
+    line-height:1.04; margin:20px 0 22px; letter-spacing:-.01em;
+  }
+  .hero-copy h1 em{font-style:italic; font-weight:500; color:var(--accent-b);}
+  .hero-copy p{
+    font-size:17px; line-height:1.65; color:var(--text-muted);
+    max-width:440px; margin-bottom:32px;
+  }
+  .hero-ctas{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--white-btn); color:#141416; font-weight:600; font-size:15px;
+    padding:15px 26px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:10px;
+    transition:transform .2s, box-shadow .2s;
+  }
+  .btn-primary:hover{transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,.35);}
+  .btn-ghost{
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--text-muted);
+    border-bottom:1px solid var(--line); padding-bottom:2px;
+    transition:color .2s, border-color .2s;
+  }
+  .btn-ghost:hover{color:var(--text); border-color:var(--text);}
+
+  .hero-specs{
+    display:flex; gap:34px; margin-top:44px; padding-top:24px;
+    border-top:1px solid var(--line); max-width:460px;
+  }
+  .hero-specs div b{display:block; font-family:'Fraunces',serif; font-size:23px; font-weight:500;}
+  .hero-specs div span{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); letter-spacing:.03em;}
+
+  /* ---- device / orb mockup ---- */
+  .device-frame{
+    position:relative;
+    background:radial-gradient(120% 120% at 50% 30%, #201f26 0%, #131316 70%);
+    border:1px solid var(--line);
+    border-radius:22px;
+    aspect-ratio:9/11;
+    max-width:400px;
+    margin-left:auto;
+    overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.5);
+  }
+  .device-topbar{
+    position:absolute; top:0; left:0; right:0;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px;
+    z-index:3;
+  }
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-muted);
+  }
+  .icon-btn svg{width:16px; height:16px;}
+
+  .orb-wrap{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .orb{
+    width:180px; height:180px; border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, var(--accent-b), var(--accent-a) 60%, #4b4de0 100%);
+    filter:blur(.3px);
+    box-shadow:0 0 90px 10px var(--accent-glow), 0 0 0 0 rgba(109,111,246,.4);
+    animation:breathe 3.6s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{transform:scale(1); box-shadow:0 0 90px 10px var(--accent-glow);}
+    50%{transform:scale(1.06); box-shadow:0 0 130px 26px var(--accent-glow);}
+  }
+  .orb-caption{
+    position:absolute; bottom:118px; left:0; right:0;
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace; font-size:11px;
+    color:var(--text-dim); letter-spacing:.06em;
+  }
+  .device-bottom{
+    position:absolute; bottom:26px; left:0; right:0;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    z-index:3;
+  }
+  .mic-btn{
+    width:60px; height:60px; border-radius:50%;
+    background:var(--white-btn);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 0 6px rgba(255,255,255,.06);
+  }
+  .mic-btn svg{width:22px; height:22px; color:#141416;}
+  .tap-label{font-size:13.5px; color:var(--text-muted);}
+  .chat-fab{
+    position:absolute; bottom:26px; right:22px;
+    width:40px; height:40px; border-radius:50%;
+    background:rgba(255,255,255,.06); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    z-index:3;
+  }
+  .chat-fab svg{width:16px; height:16px; color:var(--text-muted);}
+
+  /* ================= TRUST BAR ================= */
+  .trust{background:var(--bg-soft); border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:18px 0;}
+  .trust .wrap{
+    display:flex; align-items:center; gap:36px; flex-wrap:wrap;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--text-dim); letter-spacing:.05em;
+  }
+
+  /* ================= SECTIONS ================= */
+  section{padding:104px 0;}
+  .sec-head{max-width:620px; margin-bottom:60px;}
+  .sec-head h2{
+    font-family:'Fraunces',serif; font-weight:500;
+    font-size:clamp(30px,3.6vw,44px); line-height:1.1; margin-top:16px; letter-spacing:-.01em;
+  }
+  .sec-head p{margin-top:16px; font-size:16px; line-height:1.65; color:var(--text-muted); max-width:520px;}
+
+  .tags-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .tag-card{background:var(--panel); padding:36px 32px 32px;}
+  .tag-code{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--accent-b); letter-spacing:.08em; display:block; margin-bottom:22px;}
+  .tag-card h3{font-family:'Fraunces',serif; font-weight:500; font-size:21px; margin-bottom:12px; letter-spacing:-.01em;}
+  .tag-card p{font-size:14.5px; line-height:1.6; color:var(--text-muted);}
+
+  /* ---- demo transcript ---- */
+  .demo-grid{display:grid; grid-template-columns:.9fr 1.1fr; gap:60px; align-items:center;}
+  .device{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:22px; max-width:420px;
+  }
+  .device-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);
+    padding-bottom:14px; margin-bottom:16px; border-bottom:1px solid var(--line);
+  }
+  .device-bar .rec{display:flex; align-items:center; gap:6px; color:var(--accent-b);}
+  .device-bar .rec::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent-b); animation:pulse-dot 1.6s ease-in-out infinite;}
+  .bubble{max-width:82%; padding:12px 15px; border-radius:14px; font-size:14px; line-height:1.55; margin-bottom:12px;}
+  .bubble.user{background:var(--panel-2); margin-left:auto;}
+  .bubble.ai{background:rgba(109,111,246,.12); border:1px solid rgba(109,111,246,.25);}
+  .bubble .who{display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:.55; margin-bottom:5px; letter-spacing:.06em;}
+  .mini-wave{display:flex; align-items:flex-end; gap:3px; height:16px; margin-top:6px;}
+  .mini-wave span{width:2.5px; background:var(--accent-b); border-radius:2px; animation:mw 1.1s ease-in-out infinite;}
+  .mini-wave span:nth-child(1){height:40%;} .mini-wave span:nth-child(2){height:100%; animation-delay:.1s;}
+  .mini-wave span:nth-child(3){height:60%; animation-delay:.2s;} .mini-wave span:nth-child(4){height:85%; animation-delay:.3s;}
+  .mini-wave span:nth-child(5){height:50%; animation-delay:.4s;}
+  @keyframes mw{0%,100%{transform:scaleY(.4);} 50%{transform:scaleY(1);}}
+
+  /* ---- agencies ---- */
+  .agency-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start;}
+  .spec-list{list-style:none;}
+  .spec-list li{display:grid; grid-template-columns:34px 1fr; gap:20px; padding:22px 0; border-top:1px solid var(--line);}
+  .spec-list li:last-child{border-bottom:1px solid var(--line);}
+  .spec-list .num{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--accent-b);}
+  .spec-list h4{font-family:'Fraunces',serif; font-weight:600; font-size:17.5px; margin-bottom:6px;}
+  .spec-list p{font-size:14px; color:var(--text-muted); line-height:1.6;}
+
+  .agency-card{background:var(--panel); border:1px solid var(--line); padding:44px 38px; border-radius:16px;}
+  .agency-card blockquote{font-family:'Fraunces',serif; font-style:italic; font-weight:500; font-size:21px; line-height:1.45; margin:22px 0 26px;}
+  .agency-card .who{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text-muted);}
+
+  /* ---- final cta ---- */
+  .cta-final{
+    position:relative; overflow:hidden;
+    background:radial-gradient(700px 420px at 50% 30%, rgba(109,111,246,.16), transparent 65%), var(--bg);
+    padding:120px 0 100px;
+  }
+  .cta-final .wrap{position:relative; z-index:2; text-align:center;}
+  .cta-final .eyebrow{justify-content:center; margin-bottom:18px;}
+  .cta-final h2{font-family:'Fraunces',serif; font-weight:500; font-size:clamp(34px,5vw,54px); max-width:720px; margin:0 auto 22px; line-height:1.1;}
+  .cta-final h2 em{color:var(--accent-b); font-style:italic;}
+  .cta-final p{color:var(--text-muted); font-size:16px; max-width:460px; margin:0 auto 36px;}
+
+  footer{background:var(--bg-soft); border-top:1px solid var(--line); color:var(--text-dim); padding:30px 0; font-family:'IBM Plex Mono',monospace; font-size:12px;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;}
+
+  @media (max-width:900px){
+    .hero-grid, .demo-grid, .agency-grid{grid-template-columns:1fr;}
+    .tags-grid{grid-template-columns:1fr;}
+    .device-frame{margin:0 auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <nav>
+      <div class="logo"><span class="dot"></span>DEPA IA</div>
+      <a href="/" class="nav-cta">Probar por voz →</a>
+    </nav>
+
+    <div class="hero-grid">
+      <div class="hero-copy reveal">
+        <span class="eyebrow">Asistente inmobiliario por voz</span>
+        <h1>Que pregunten <em>hablando.</em><br>Que respondan al toque.</h1>
+        <p>DEPA IA contesta por voz, al instante, todo lo que un cliente pregunta antes de visitar un departamento: precio, metraje, entrega y financiamiento.</p>
+        <div class="hero-ctas">
+          <a href="/" class="btn-primary">Escuchar una demo</a>
+          <a href="#agencias" class="btn-ghost">Ver cómo funciona para tu inmobiliaria ↓</a>
+        </div>
+        <div class="hero-specs">
+          <div><b>24/7</b><span>ATIENDE SIN HORARIO</span></div>
+          <div><b>1 voz</b><span>PARA TODO TU PROYECTO</span></div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="device-frame">
+          <div class="device-topbar">
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+            </div>
+          </div>
+
+          <div class="orb-wrap"><div class="orb"></div></div>
+          <div class="orb-caption mono">DEPTO. 402 · VISTA HUÁNUCO · 62 M²</div>
+
+          <div class="device-bottom">
+            <div class="mic-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            </div>
+            <span class="tap-label mono">Toca para preguntar</span>
+          </div>
+          <div class="chat-fab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="trust">
+  <div class="wrap">
+    <span>PENSADO PARA INMOBILIARIAS PERUANAS</span>
+    <span>·</span>
+    <span>MIVIVIENDA</span>
+    <span>·</span>
+    <span>TECHO PROPIO</span>
+    <span>·</span>
+    <span>CRÉDITO HIPOTECARIO</span>
+    <span>·</span>
+    <span>PREVENTA Y ENTREGA INMEDIATA</span>
+  </div>
+</div>
+
+<section id="que-resuelve">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Lo que resuelve</span>
+      <h2>Las mismas cinco preguntas, cien veces al día. Que las responda DEPA IA.</h2>
+      <p>Un cliente que llama a las 9pm un domingo no debería esperar hasta el lunes. DEPA IA conoce cada proyecto, cada departamento disponible y cada condición de financiamiento — y lo dice en voz alta, como lo diría tu mejor asesor.</p>
+    </div>
+    <div class="tags-grid">
+      <div class="tag-card reveal">
+        <span class="tag-code mono">AMB — 01</span>
+        <h3>Conoce cada departamento</h3>
+        <p>Precios, metrajes, pisos disponibles, fecha de entrega y acabados de cada proyecto que le cargues, sin guiones fijos ni respuestas genéricas.</p>
+      </div>
+      <div class="tag-card reveal">
+        <span class="tag-code mono">AMB — 02</span>
+        <h3>Habla, no escribe</h3>
+        <p>El cliente pregunta con su voz y DEPA IA responde con la suya. Nada de formularios ni chats fríos: es una conversación real, en segundos.</p>
+      </div>
+      <div class="tag-card reveal">
+        <span class="tag-code mono">AMB — 03</span>
+        <h3>Filtra antes de agendar</h3>
+        <p>Cuota inicial, bono del buen pagador, requisitos de MiVivienda o Techo Propio: aclara lo básico antes de pasar la visita a tu equipo de ventas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--bg-soft); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="demo-grid">
+      <div class="sec-head reveal" style="margin-bottom:0;">
+        <span class="eyebrow">Así suena</span>
+        <h2>Una pregunta hablada. Una respuesta exacta.</h2>
+        <p>No hay menús ni "para ventas presione 1". El cliente habla como hablaría con un asesor, y DEPA IA responde con el dato correcto del proyecto — al toque.</p>
+      </div>
+      <div class="device reveal">
+        <div class="device-bar"><span>DEPA IA · LLAMADA EN VIVO</span><span class="rec">ESCUCHANDO</span></div>
+        <div class="bubble user"><span class="who">CLIENTE</span>¿Tienen algo de dos dormitorios que entregue este año, con MiVivienda?</div>
+        <div class="bubble ai"><span class="who">DEPA IA</span>Sí, el depa 402 del proyecto Vista Huánuco: 62 m², dos dormitorios, entrega en diciembre. Con MiVivienda la cuota inicial parte desde S/ 8,500.
+          <div class="mini-wave"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="bubble user"><span class="who">CLIENTE</span>¿Puedo verlo este sábado?</div>
+        <div class="bubble ai"><span class="who">DEPA IA</span>Claro, te dejo agendada la visita el sábado a las 10 a.m. y aviso a tu asesor.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="agencias">
+  <div class="wrap">
+    <div class="agency-grid">
+      <div>
+        <div class="sec-head reveal">
+          <span class="eyebrow">Para inmobiliarias</span>
+          <h2>Un asesor que nunca se va a almorzar.</h2>
+        </div>
+        <ul class="spec-list">
+          <li class="reveal"><span class="num mono">→</span><div><h4>Se instala sobre tu catálogo actual</h4><p>Carga tus proyectos, precios y disponibilidad tal como los manejas hoy. DEPA IA se actualiza junto con tu inventario.</p></div></li>
+          <li class="reveal"><span class="num mono">→</span><div><h4>Atiende en tu web, WhatsApp o central telefónica</h4><p>El mismo asistente responde donde ya está tu cliente, sin que note que cambió de canal.</p></div></li>
+          <li class="reveal"><span class="num mono">→</span><div><h4>Le entrega a tu equipo solo lo que vale la pena</h4><p>Conversaciones calificadas, visitas agendadas y dudas de financiamiento ya resueltas antes de que suene el teléfono.</p></div></li>
+        </ul>
+      </div>
+      <div class="agency-card reveal">
+        <span class="eyebrow">Caso de uso</span>
+        <blockquote>"Antes contestábamos lo mismo por WhatsApp toda la tarde. Ahora DEPA IA lo resuelve por voz y solo nos llegan los clientes listos para visitar."</blockquote>
+        <span class="who">— Asesora comercial, proyecto residencial en Huánuco</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="hablar" class="cta-final">
+  <div class="wrap">
+    <span class="eyebrow">Empieza hoy</span>
+    <h2>Deja que <em>pregunten hablando</em>,<br>a cualquier hora.</h2>
+    <p>Súbele el catálogo de tu proyecto a DEPA IA y ponlo a responder por voz en tu web o WhatsApp en un par de días.</p>
+    <a href="#" class="btn-primary">Solicitar una demo</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>DEPA IA © 2026</span>
+    <span>Asistente de voz para inmobiliarias · Perú</span>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
