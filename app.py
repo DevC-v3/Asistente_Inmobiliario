@@ -1,8 +1,10 @@
+import asyncio
 import os
 import base64
 import tempfile
 
 from dotenv import load_dotenv
+import edge_tts
 import numpy as np
 import faiss
 from flask import Flask, render_template, request, jsonify
@@ -132,13 +134,16 @@ def chat():
 
         respuesta = response.choices[0].message.content
 
-        tts_response = client.audio.speech.create(
-            model="tts-1",
-            voice="alloy",
-            input=respuesta
-        )
+        async def _tts():
+            tts = edge_tts.Communicate(respuesta, "es-ES-ElviraNeural")
+            audio = b""
+            async for chunk in tts.stream():
+                if chunk["type"] == "audio":
+                    audio += chunk["data"]
+            return audio
 
-        audio_b64 = base64.b64encode(tts_response.content).decode('utf-8')
+        audio_bytes = asyncio.run(_tts())
+        audio_b64 = base64.b64encode(audio_bytes).decode('utf-8')
 
         return jsonify({
             "question": pregunta,
